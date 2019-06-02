@@ -17,51 +17,55 @@ var user,
 /**
  * Unit tests
  */
-describe('<%= humanizedSingularName %> Model Unit Tests:', function() {
-  beforeEach(function(done) {
+describe('<%= humanizedSingularName %> Model Unit Tests:', function () {
+
+  beforeEach(function (done) {
     user = new User({
       firstName: 'Full',
       lastName: 'Name',
       displayName: 'Full Name',
       email: 'test@test.com',
       username: 'username',
-      password: 'password'
+      password: 'M3@n.jsI$Aw3$0m3',
+      provider: 'local'
     });
 
-    user.save(function() {
-      <%= camelizedSingularName %> = new <%= classifiedSingularName %>({
-        name: '<%= humanizedSingularName %> Name',
-        user: user
-      });
+    user.save()
+      .then(function () {
+        <%= camelizedSingularName %> = new <%= classifiedSingularName %>({
+          title: '<%= classifiedSingularName %> Title',
+          content: '<%= classifiedSingularName %> Content',
+          user: user
+        });
 
-      done();
-    });
+        done();
+      })
+      .catch(done);
   });
 
-  describe('Method Save', function() {
-    it('should be able to save without problems', function(done) {
-      this.timeout(0);
-      return <%=camelizedSingularName %>.save(function(err) {
+  describe('Method Save', function () {
+    it('should be able to save without problems', function (done) {
+      this.timeout(10000);
+      <%=camelizedSingularName %>.save(function (err) {
         should.not.exist(err);
-        done();
+        return done();
       });
     });
 
-    it('should be able to show an error when try to save without name', function(done) {
-      <%= camelizedSingularName %>.name = '';
+    it('should be able to show an error when try to save without title', function (done) {
+      <%= camelizedSingularName %>.title = '';
 
-      return <%=camelizedSingularName %>.save(function(err) {
+      <%=camelizedSingularName %>.save(function (err) {
         should.exist(err);
-        done();
+        return done();
       });
     });
   });
 
-  afterEach(function(done) {
-    <%= classifiedSingularName %>.remove().exec(function() {
-      User.remove().exec(function() {
-        done();
-      });
-    });
+  afterEach(function (done) {
+    <%= classifiedSingularName %>.remove().exec()
+      .then(User.remove().exec())
+      .then(done())
+      .catch(done);
   });
 });

@@ -1,78 +1,78 @@
 'use strict';
 
 /**
- * Module dependencies.
+ * Module dependencies
  */
 var path = require('path'),
   mongoose = require('mongoose'),
   <%= classifiedSingularName %> = mongoose.model('<%= classifiedSingularName %>'),
-  errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
-  _ = require('lodash');
+  errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 
 /**
- * Create a <%= humanizedSingularName %>
+ * Create an <%= camelizedSingularName %>
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var <%= camelizedSingularName %> = new <%= classifiedSingularName %>(req.body);
   <%= camelizedSingularName %>.user = req.user;
 
-  <%= camelizedSingularName %>.save(function(err) {
+  <%= camelizedSingularName %>.save(function (err) {
     if (err) {
-      return res.status(400).send({
+      return res.status(422).send({
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      res.jsonp(<%= camelizedSingularName %>);
+      res.json(<%= camelizedSingularName %>);
     }
   });
 };
 
 /**
- * Show the current <%= humanizedSingularName %>
+ * Show the current <%= camelizedSingularName %>
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var <%= camelizedSingularName %> = req.<%= camelizedSingularName %> ? req.<%= camelizedSingularName %>.toJSON() : {};
 
-  // Add a custom field to the Article, for determining if the current User is the "owner".
-  // NOTE: This field is NOT persisted to the database, since it doesn't exist in the Article model.
-  <%= camelizedSingularName %>.isCurrentUserOwner = req.user && <%= camelizedSingularName %>.user && <%= camelizedSingularName %>.user._id.toString() === req.user._id.toString();
+  // Add a custom field to the <%= camelizedSingularName %>, for determining if the current User is the "owner".
+  // NOTE: This field is NOT persisted to the database, since it doesn't exist in the <%= camelizedSingularName %> model.
+  <%= camelizedSingularName %>.isCurrentUserOwner = !!(req.user && <%= camelizedSingularName %>.user && <%= camelizedSingularName %>.user._id.toString() === req.user._id.toString());
 
-  res.jsonp(<%= camelizedSingularName %>);
+  res.json(<%= camelizedSingularName %>);
 };
 
 /**
- * Update a <%= humanizedSingularName %>
+ * Update an <%= camelizedSingularName %>
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var <%= camelizedSingularName %> = req.<%= camelizedSingularName %>;
 
-  <%= camelizedSingularName %> = _.extend(<%= camelizedSingularName %>, req.body);
+  <%= camelizedSingularName %>.title = req.body.title;
+  <%= camelizedSingularName %>.content = req.body.content;
 
-  <%= camelizedSingularName %>.save(function(err) {
+  <%= camelizedSingularName %>.save(function (err) {
     if (err) {
-      return res.status(400).send({
+      return res.status(422).send({
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      res.jsonp(<%= camelizedSingularName %>);
+      res.json(<%= camelizedSingularName %>);
     }
   });
 };
 
 /**
- * Delete an <%= humanizedSingularName %>
+ * Delete an <%= camelizedSingularName %>
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var <%= camelizedSingularName %> = req.<%= camelizedSingularName %>;
 
-  <%= camelizedSingularName %>.remove(function(err) {
+  <%= camelizedSingularName %>.remove(function (err) {
     if (err) {
-      return res.status(400).send({
+      return res.status(422).send({
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      res.jsonp(<%= camelizedSingularName %>);
+      res.json(<%= camelizedSingularName %>);
     }
   });
 };
@@ -80,14 +80,14 @@ exports.delete = function(req, res) {
 /**
  * List of <%= humanizedPluralName %>
  */
-exports.list = function(req, res) {
-  <%= classifiedSingularName %>.find().sort('-created').populate('user', 'displayName').exec(function(err, <%= camelizedPluralName %>) {
+exports.list = function (req, res) {
+  <%= classifiedSingularName %>.find().sort('-created').populate('user', 'displayName').exec(function (err, <%= camelizedPluralName %>) {
     if (err) {
-      return res.status(400).send({
+      return res.status(422).send({
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      res.jsonp(<%= camelizedPluralName %>);
+      res.json(<%= camelizedPluralName %>);
     }
   });
 };
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 /**
  * <%= humanizedSingularName %> middleware
  */
-exports.<%= camelizedSingularName %>ByID = function(req, res, next, id) {
+exports.<%= camelizedSingularName %>ByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
@@ -108,7 +108,7 @@ exports.<%= camelizedSingularName %>ByID = function(req, res, next, id) {
       return next(err);
     } else if (!<%= camelizedSingularName %>) {
       return res.status(404).send({
-        message: 'No <%= humanizedSingularName %> with that identifier has been found'
+        message: 'No <%= camelizedSingularName %> with that identifier has been found'
       });
     }
     req.<%= camelizedSingularName %> = <%= camelizedSingularName %>;

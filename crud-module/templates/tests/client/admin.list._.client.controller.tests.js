@@ -1,9 +1,9 @@
 (function () {
   'use strict';
 
-  describe('<%= humanizedPluralName %> Controller Tests', function () {
+  describe('Admin <%= humanizedPluralName %> List Controller Tests', function () {
     // Initialize global variables
-    var <%= classifiedPluralName %>Controller,
+    var <%= classifiedPluralName %>AdminListController,
       $scope,
       $httpBackend,
       $state,
@@ -46,6 +46,10 @@
       Authentication = _Authentication_;
       <%= classifiedPluralName %>Service = _<%= classifiedPluralName %>Service_;
 
+      // Ignore parent template get on state transitions
+      $httpBackend.whenGET('/modules/<%= slugifiedPluralName %>/client/views/list-<%= slugifiedPluralName %>.client.view.html').respond(200, '');
+      $httpBackend.whenGET('/modules/core/client/views/home.client.view.html').respond(200, '');
+
       // create mock <%= camelizedSingularName %>
       mock<%= classifiedSingularName %> = new <%= classifiedPluralName %>Service({
         _id: '525a8422f6d0f87f0e407a33',
@@ -55,17 +59,38 @@
 
       // Mock logged in user
       Authentication.user = {
-        roles: ['user']
+        roles: ['user', 'admin']
       };
 
-      // Initialize the <%= humanizedPluralName %> controller.
-      <%= classifiedPluralName %>Controller = $controller('<%= humanizedPluralName %>Controller as vm', {
-        $scope: $scope,
-        <%= camelizedSingularName %>Resolve: {}
+      // Initialize the <%= humanizedPluralName %> List controller.
+      <%= classifiedPluralName %>AdminListController = $controller('<%= classifiedPluralName %>AdminListController as vm', {
+        $scope: $scope
       });
 
       // Spy on state go
       spyOn($state, 'go');
     }));
+
+    describe('Instantiate', function () {
+      var mock<%= classifiedSingularName %>List;
+
+      beforeEach(function () {
+        mock<%= classifiedSingularName %>List = [mock<%= classifiedSingularName %>, mock<%= classifiedSingularName %>];
+      });
+
+      it('should send a GET request and return all <%= slugifiedPluralName %>', inject(function (<%= classifiedPluralName %>Service) {
+        // Set POST response
+        $httpBackend.expectGET('/api/<%= slugifiedPluralName %>').respond(mock<%= classifiedSingularName %>List);
+
+
+        $httpBackend.flush();
+
+        // Test form inputs are reset
+        expect($scope.vm.<%= camelizedPluralName %>.length).toEqual(2);
+        expect($scope.vm.<%= camelizedPluralName %>[0]).toEqual(mock<%= classifiedSingularName %>);
+        expect($scope.vm.<%= camelizedPluralName %>[1]).toEqual(mock<%= classifiedSingularName %>);
+
+      }));
+    });
   });
 }());

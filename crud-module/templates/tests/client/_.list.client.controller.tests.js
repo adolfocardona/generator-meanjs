@@ -46,10 +46,11 @@
       Authentication = _Authentication_;
       <%= classifiedPluralName %>Service = _<%= classifiedPluralName %>Service_;
 
-      // create mock article
+      // create mock <%= camelizedSingularName %>
       mock<%= classifiedSingularName %> = new <%= classifiedPluralName %>Service({
         _id: '525a8422f6d0f87f0e407a33',
-        name: '<%= humanizedSingularName %> Name'
+        title: 'An <%= humanizedSingularName %> about MEAN',
+        content: 'MEAN rocks!'
       });
 
       // Mock logged in user
@@ -73,10 +74,12 @@
         mock<%= classifiedSingularName %>List = [mock<%= classifiedSingularName %>, mock<%= classifiedSingularName %>];
       });
 
-      it('should send a GET request and return all <%= humanizedPluralName %>', inject(function (<%= classifiedPluralName %>Service) {
+      it('should send a GET request and return all <%= slugifiedPluralName %>', inject(function (<%= classifiedPluralName %>Service) {
         // Set POST response
-        $httpBackend.expectGET('api/<%= slugifiedPluralName %>').respond(mock<%= classifiedSingularName %>List);
+        $httpBackend.expectGET('/api/<%= slugifiedPluralName %>').respond(mock<%= classifiedSingularName %>List);
 
+        // Ignore parent template get on state transition
+        $httpBackend.whenGET('/modules/core/client/views/home.client.view.html').respond(200, '');
 
         $httpBackend.flush();
 

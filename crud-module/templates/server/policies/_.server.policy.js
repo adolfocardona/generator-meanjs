@@ -25,7 +25,7 @@ exports.invokeRolesPolicies = function () {
     roles: ['user'],
     allows: [{
       resources: '/api/<%= slugifiedPluralName %>',
-      permissions: ['get', 'post']
+      permissions: ['get']
     }, {
       resources: '/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id',
       permissions: ['get']
@@ -48,7 +48,7 @@ exports.invokeRolesPolicies = function () {
 exports.isAllowed = function (req, res, next) {
   var roles = (req.user) ? req.user.roles : ['guest'];
 
-  // If an <%= humanizedSingularName %> is being processed and the current user created it then allow any manipulation
+  // If an <%= camelizedSingularName %> is being processed and the current user created it then allow any manipulation
   if (req.<%= camelizedSingularName %> && req.user && req.<%= camelizedSingularName %>.user && req.<%= camelizedSingularName %>.user.id === req.user.id) {
     return next();
   }

@@ -24,7 +24,7 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
 
   before(function (done) {
     // Get application
-    app = express.init(mongoose);
+    app = express.init(mongoose.connection.db);
     agent = request.agent(app);
 
     done();
@@ -33,7 +33,7 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
   beforeEach(function (done) {
     // Create user credentials
     credentials = {
-      username: 'username',
+      usernameOrEmail: 'username',
       password: 'M3@n.jsI$Aw3$0m3'
     };
 
@@ -43,22 +43,25 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
       lastName: 'Name',
       displayName: 'Full Name',
       email: 'test@test.com',
-      username: credentials.username,
+      username: credentials.usernameOrEmail,
       password: credentials.password,
       provider: 'local'
     });
 
-    // Save a user to the test db and create new <%= humanizedSingularName %>
-    user.save(function () {
-      <%= camelizedSingularName %> = {
-        name: '<%= humanizedSingularName %> name'
-      };
+    // Save a user to the test db and create new <%=camelizedSingularName %>
+    user.save()
+      .then(function () {
+        <%=camelizedSingularName %> = {
+          title: '<%= humanizedSingularName %> Title',
+          content: '<%= humanizedSingularName %> Content'
+        };
 
-      done();
-    });
+        done();
+      })
+      .catch(done);
   });
 
-  it('should be able to save a <%= humanizedSingularName %> if logged in', function (done) {
+  it('should not be able to save an <%=camelizedSingularName %> if logged in without the "admin" role', function (done) {
     agent.post('/api/auth/signin')
       .send(credentials)
       .expect(200)
@@ -68,55 +71,28 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
           return done(signinErr);
         }
 
-        // Get the userId
-        var userId = user.id;
-
-        // Save a new <%= humanizedSingularName %>
-        agent.post('/api/<%= camelizedPluralName %>')
-          .send(<%= camelizedSingularName %>)
-          .expect(200)
-          .end(function (<%= camelizedSingularName %>SaveErr, <%= camelizedSingularName %>SaveRes) {
-            // Handle <%= humanizedSingularName %> save error
-            if (<%= camelizedSingularName %>SaveErr) {
-              return done(<%= camelizedSingularName %>SaveErr);
-            }
-
-            // Get a list of <%= humanizedPluralName %>
-            agent.get('/api/<%= camelizedPluralName %>')
-              .end(function (<%= camelizedPluralName %>GetErr, <%= camelizedPluralName %>GetRes) {
-                // Handle <%= humanizedPluralName %> save error
-                if (<%= camelizedPluralName %>GetErr) {
-                  return done(<%= camelizedPluralName %>GetErr);
-                }
-
-                // Get <%= humanizedPluralName %> list
-                var <%= camelizedPluralName %> = <%= camelizedPluralName %>GetRes.body;
-
-                // Set assertions
-                (<%= camelizedPluralName %>[0].user._id).should.equal(userId);
-                (<%= camelizedPluralName %>[0].name).should.match('<%= humanizedSingularName %> name');
-
-                // Call the assertion callback
-                done();
-              });
+        agent.post('/api/<%=camelizedPluralName %>')
+          .send(<%=camelizedSingularName %>)
+          .expect(403)
+          .end(function (<%=camelizedSingularName %>SaveErr, <%=camelizedSingularName %>SaveRes) {
+            // Call the assertion callback
+            done(<%=camelizedSingularName %>SaveErr);
           });
+
       });
   });
 
-  it('should not be able to save an <%= humanizedSingularName %> if not logged in', function (done) {
-    agent.post('/api/<%= camelizedPluralName %>')
-      .send(<%= camelizedSingularName %>)
+  it('should not be able to save an <%=camelizedSingularName %> if not logged in', function (done) {
+    agent.post('/api/<%=camelizedPluralName %>')
+      .send(<%=camelizedSingularName %>)
       .expect(403)
-      .end(function (<%= camelizedSingularName %>SaveErr, <%= camelizedSingularName %>SaveRes) {
+      .end(function (<%=camelizedSingularName %>SaveErr, <%=camelizedSingularName %>SaveRes) {
         // Call the assertion callback
-        done(<%= camelizedSingularName %>SaveErr);
+        done(<%=camelizedSingularName %>SaveErr);
       });
   });
 
-  it('should not be able to save an <%= humanizedSingularName %> if no name is provided', function (done) {
-    // Invalidate name field
-    <%= camelizedSingularName %>.name = '';
-
+  it('should not be able to update an <%=camelizedSingularName %> if signed in without the "admin" role', function (done) {
     agent.post('/api/auth/signin')
       .send(credentials)
       .expect(200)
@@ -126,78 +102,24 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
           return done(signinErr);
         }
 
-        // Get the userId
-        var userId = user.id;
-
-        // Save a new <%= humanizedSingularName %>
-        agent.post('/api/<%= camelizedPluralName %>')
-          .send(<%= camelizedSingularName %>)
-          .expect(400)
-          .end(function (<%= camelizedSingularName %>SaveErr, <%= camelizedSingularName %>SaveRes) {
-            // Set message assertion
-            (<%= camelizedSingularName %>SaveRes.body.message).should.match('Please fill <%= humanizedSingularName %> name');
-
-            // Handle <%= humanizedSingularName %> save error
-            done(<%= camelizedSingularName %>SaveErr);
+        agent.post('/api/<%=camelizedPluralName %>')
+          .send(<%=camelizedSingularName %>)
+          .expect(403)
+          .end(function (<%=camelizedSingularName %>SaveErr, <%=camelizedSingularName %>SaveRes) {
+            // Call the assertion callback
+            done(<%=camelizedSingularName %>SaveErr);
           });
       });
   });
 
-  it('should be able to update an <%= humanizedSingularName %> if signed in', function (done) {
-    agent.post('/api/auth/signin')
-      .send(credentials)
-      .expect(200)
-      .end(function (signinErr, signinRes) {
-        // Handle signin error
-        if (signinErr) {
-          return done(signinErr);
-        }
+  it('should be able to get a list of <%=camelizedPluralName %> if not signed in', function (done) {
+    // Create new <%=camelizedSingularName %> model instance
+    var <%=camelizedSingularName %>Obj = new <%= humanizedSingularName %>(<%=camelizedSingularName %>);
 
-        // Get the userId
-        var userId = user.id;
-
-        // Save a new <%= humanizedSingularName %>
-        agent.post('/api/<%= camelizedPluralName %>')
-          .send(<%= camelizedSingularName %>)
-          .expect(200)
-          .end(function (<%= camelizedSingularName %>SaveErr, <%= camelizedSingularName %>SaveRes) {
-            // Handle <%= humanizedSingularName %> save error
-            if (<%= camelizedSingularName %>SaveErr) {
-              return done(<%= camelizedSingularName %>SaveErr);
-            }
-
-            // Update <%= humanizedSingularName %> name
-            <%= camelizedSingularName %>.name = 'WHY YOU GOTTA BE SO MEAN?';
-
-            // Update an existing <%= humanizedSingularName %>
-            agent.put('/api/<%= camelizedPluralName %>/' + <%= camelizedSingularName %>SaveRes.body._id)
-              .send(<%= camelizedSingularName %>)
-              .expect(200)
-              .end(function (<%= camelizedSingularName %>UpdateErr, <%= camelizedSingularName %>UpdateRes) {
-                // Handle <%= humanizedSingularName %> update error
-                if (<%= camelizedSingularName %>UpdateErr) {
-                  return done(<%= camelizedSingularName %>UpdateErr);
-                }
-
-                // Set assertions
-                (<%= camelizedSingularName %>UpdateRes.body._id).should.equal(<%= camelizedSingularName %>SaveRes.body._id);
-                (<%= camelizedSingularName %>UpdateRes.body.name).should.match('WHY YOU GOTTA BE SO MEAN?');
-
-                // Call the assertion callback
-                done();
-              });
-          });
-      });
-  });
-
-  it('should be able to get a list of <%= humanizedPluralName %> if not signed in', function (done) {
-    // Create new <%= humanizedSingularName %> model instance
-    var <%= camelizedSingularName %>Obj = new <%= classifiedSingularName %>(<%= camelizedSingularName %>);
-
-    // Save the <%= camelizedSingularName %>
-    <%= camelizedSingularName %>Obj.save(function () {
-      // Request <%= humanizedPluralName %>
-      request(app).get('/api/<%= camelizedPluralName %>')
+    // Save the <%=camelizedSingularName %>
+    <%=camelizedSingularName %>Obj.save(function () {
+      // Request <%=camelizedPluralName %>
+      agent.get('/api/<%=camelizedPluralName %>')
         .end(function (req, res) {
           // Set assertion
           res.body.should.be.instanceof(Array).and.have.lengthOf(1);
@@ -209,16 +131,16 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
     });
   });
 
-  it('should be able to get a single <%= humanizedSingularName %> if not signed in', function (done) {
-    // Create new <%= humanizedSingularName %> model instance
-    var <%= camelizedSingularName %>Obj = new <%= classifiedSingularName %>(<%= camelizedSingularName %>);
+  it('should be able to get a single <%=camelizedSingularName %> if not signed in', function (done) {
+    // Create new <%=camelizedSingularName %> model instance
+    var <%=camelizedSingularName %>Obj = new <%= humanizedSingularName %>(<%=camelizedSingularName %>);
 
-    // Save the <%= humanizedSingularName %>
-    <%= camelizedSingularName %>Obj.save(function () {
-      request(app).get('/api/<%= camelizedPluralName %>/' + <%= camelizedSingularName %>Obj._id)
+    // Save the <%=camelizedSingularName %>
+    <%=camelizedSingularName %>Obj.save(function () {
+      agent.get('/api/<%=camelizedPluralName %>/' + <%=camelizedSingularName %>Obj._id)
         .end(function (req, res) {
           // Set assertion
-          res.body.should.be.instanceof(Object).and.have.property('name', <%= camelizedSingularName %>.name);
+          res.body.should.be.instanceof(Object).and.have.property('title', <%=camelizedSingularName %>.title);
 
           // Call the assertion callback
           done();
@@ -226,9 +148,9 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
     });
   });
 
-  it('should return proper error for single <%= humanizedSingularName %> with an invalid Id, if not signed in', function (done) {
+  it('should return proper error for single <%=camelizedSingularName %> with an invalid Id, if not signed in', function (done) {
     // test is not a valid mongoose Id
-    request(app).get('/api/<%= camelizedPluralName %>/test')
+    agent.get('/api/<%=camelizedPluralName %>/test')
       .end(function (req, res) {
         // Set assertion
         res.body.should.be.instanceof(Object).and.have.property('message', '<%= humanizedSingularName %> is invalid');
@@ -238,19 +160,19 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
       });
   });
 
-  it('should return proper error for single <%= humanizedSingularName %> which doesnt exist, if not signed in', function (done) {
-    // This is a valid mongoose Id but a non-existent <%= humanizedSingularName %>
-    request(app).get('/api/<%= camelizedPluralName %>/559e9cd815f80b4c256a8f41')
+  it('should return proper error for single <%=camelizedSingularName %> which doesnt exist, if not signed in', function (done) {
+    // This is a valid mongoose Id but a non-existent <%=camelizedSingularName %>
+    agent.get('/api/<%=camelizedPluralName %>/559e9cd815f80b4c256a8f41')
       .end(function (req, res) {
         // Set assertion
-        res.body.should.be.instanceof(Object).and.have.property('message', 'No <%= humanizedSingularName %> with that identifier has been found');
+        res.body.should.be.instanceof(Object).and.have.property('message', 'No <%=camelizedSingularName %> with that identifier has been found');
 
         // Call the assertion callback
         done();
       });
   });
 
-  it('should be able to delete an <%= humanizedSingularName %> if signed in', function (done) {
+  it('should not be able to delete an <%=camelizedSingularName %> if signed in without the "admin" role', function (done) {
     agent.post('/api/auth/signin')
       .send(credentials)
       .expect(200)
@@ -260,66 +182,43 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
           return done(signinErr);
         }
 
-        // Get the userId
-        var userId = user.id;
-
-        // Save a new <%= humanizedSingularName %>
-        agent.post('/api/<%= camelizedPluralName %>')
-          .send(<%= camelizedSingularName %>)
-          .expect(200)
-          .end(function (<%= camelizedSingularName %>SaveErr, <%= camelizedSingularName %>SaveRes) {
-            // Handle <%= humanizedSingularName %> save error
-            if (<%= camelizedSingularName %>SaveErr) {
-              return done(<%= camelizedSingularName %>SaveErr);
-            }
-
-            // Delete an existing <%= humanizedSingularName %>
-            agent.delete('/api/<%= camelizedPluralName %>/' + <%= camelizedSingularName %>SaveRes.body._id)
-              .send(<%= camelizedSingularName %>)
-              .expect(200)
-              .end(function (<%= camelizedSingularName %>DeleteErr, <%= camelizedSingularName %>DeleteRes) {
-                // Handle <%= camelizedSingularName %> error error
-                if (<%= camelizedSingularName %>DeleteErr) {
-                  return done(<%= camelizedSingularName %>DeleteErr);
-                }
-
-                // Set assertions
-                (<%= camelizedSingularName %>DeleteRes.body._id).should.equal(<%= camelizedSingularName %>SaveRes.body._id);
-
-                // Call the assertion callback
-                done();
-              });
+        agent.post('/api/<%=camelizedPluralName %>')
+          .send(<%=camelizedSingularName %>)
+          .expect(403)
+          .end(function (<%=camelizedSingularName %>SaveErr, <%=camelizedSingularName %>SaveRes) {
+            // Call the assertion callback
+            done(<%=camelizedSingularName %>SaveErr);
           });
       });
   });
 
-  it('should not be able to delete an <%= humanizedSingularName %> if not signed in', function (done) {
-    // Set <%= humanizedSingularName %> user
-    <%= camelizedSingularName %>.user = user;
+  it('should not be able to delete an <%=camelizedSingularName %> if not signed in', function (done) {
+    // Set <%=camelizedSingularName %> user
+    <%=camelizedSingularName %>.user = user;
 
-    // Create new <%= humanizedSingularName %> model instance
-    var <%= camelizedSingularName %>Obj = new <%= classifiedSingularName %>(<%= camelizedSingularName %>);
+    // Create new <%=camelizedSingularName %> model instance
+    var <%=camelizedSingularName %>Obj = new <%= humanizedSingularName %>(<%=camelizedSingularName %>);
 
-    // Save the <%= humanizedSingularName %>
-    <%= camelizedSingularName %>Obj.save(function () {
-      // Try deleting <%= humanizedSingularName %>
-      request(app).delete('/api/<%= camelizedPluralName %>/' + <%= camelizedSingularName %>Obj._id)
+    // Save the <%=camelizedSingularName %>
+    <%=camelizedSingularName %>Obj.save(function () {
+      // Try deleting <%=camelizedSingularName %>
+      agent.delete('/api/<%=camelizedPluralName %>/' + <%=camelizedSingularName %>Obj._id)
         .expect(403)
-        .end(function (<%= camelizedSingularName %>DeleteErr, <%= camelizedSingularName %>DeleteRes) {
+        .end(function (<%=camelizedSingularName %>DeleteErr, <%=camelizedSingularName %>DeleteRes) {
           // Set message assertion
-          (<%= camelizedSingularName %>DeleteRes.body.message).should.match('User is not authorized');
+          (<%=camelizedSingularName %>DeleteRes.body.message).should.match('User is not authorized');
 
-          // Handle <%= humanizedSingularName %> error error
-          done(<%= camelizedSingularName %>DeleteErr);
+          // Handle <%=camelizedSingularName %> error error
+          done(<%=camelizedSingularName %>DeleteErr);
         });
 
     });
   });
 
-  it('should be able to get a single <%= humanizedSingularName %> that has an orphaned user reference', function (done) {
+  it('should be able to get a single <%=camelizedSingularName %> that has an orphaned user reference', function (done) {
     // Create orphan user creds
     var _creds = {
-      username: 'orphan',
+      usernameOrEmail: 'orphan',
       password: 'M3@n.jsI$Aw3$0m3'
     };
 
@@ -329,9 +228,10 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
       lastName: 'Name',
       displayName: 'Full Name',
       email: 'orphan@test.com',
-      username: _creds.username,
+      username: _creds.usernameOrEmail,
       password: _creds.password,
-      provider: 'local'
+      provider: 'local',
+      roles: ['admin']
     });
 
     _orphan.save(function (err, orphan) {
@@ -352,22 +252,22 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
           // Get the userId
           var orphanId = orphan._id;
 
-          // Save a new <%= humanizedSingularName %>
-          agent.post('/api/<%= camelizedPluralName %>')
-            .send(<%= camelizedSingularName %>)
+          // Save a new <%=camelizedSingularName %>
+          agent.post('/api/<%=camelizedPluralName %>')
+            .send(<%=camelizedSingularName %>)
             .expect(200)
-            .end(function (<%= camelizedSingularName %>SaveErr, <%= camelizedSingularName %>SaveRes) {
-              // Handle <%= humanizedSingularName %> save error
-              if (<%= camelizedSingularName %>SaveErr) {
-                return done(<%= camelizedSingularName %>SaveErr);
+            .end(function (<%=camelizedSingularName %>SaveErr, <%=camelizedSingularName %>SaveRes) {
+              // Handle <%=camelizedSingularName %> save error
+              if (<%=camelizedSingularName %>SaveErr) {
+                return done(<%=camelizedSingularName %>SaveErr);
               }
 
-              // Set assertions on new <%= humanizedSingularName %>
-              (<%= camelizedSingularName %>SaveRes.body.name).should.equal(<%= camelizedSingularName %>.name);
-              should.exist(<%= camelizedSingularName %>SaveRes.body.user);
-              should.equal(<%= camelizedSingularName %>SaveRes.body.user._id, orphanId);
+              // Set assertions on new <%=camelizedSingularName %>
+              (<%=camelizedSingularName %>SaveRes.body.title).should.equal(<%=camelizedSingularName %>.title);
+              should.exist(<%=camelizedSingularName %>SaveRes.body.user);
+              should.equal(<%=camelizedSingularName %>SaveRes.body.user._id, orphanId);
 
-              // force the <%= humanizedSingularName %> to have an orphaned user reference
+              // force the <%=camelizedSingularName %> to have an orphaned user reference
               orphan.remove(function () {
                 // now signin with valid user
                 agent.post('/api/auth/signin')
@@ -379,19 +279,19 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
                       return done(err);
                     }
 
-                    // Get the <%= humanizedSingularName %>
-                    agent.get('/api/<%= camelizedPluralName %>/' + <%= camelizedSingularName %>SaveRes.body._id)
+                    // Get the <%=camelizedSingularName %>
+                    agent.get('/api/<%=camelizedPluralName %>/' + <%=camelizedSingularName %>SaveRes.body._id)
                       .expect(200)
-                      .end(function (<%= camelizedSingularName %>InfoErr, <%= camelizedSingularName %>InfoRes) {
-                        // Handle <%= humanizedSingularName %> error
-                        if (<%= camelizedSingularName %>InfoErr) {
-                          return done(<%= camelizedSingularName %>InfoErr);
+                      .end(function (<%=camelizedSingularName %>InfoErr, <%=camelizedSingularName %>InfoRes) {
+                        // Handle <%=camelizedSingularName %> error
+                        if (<%=camelizedSingularName %>InfoErr) {
+                          return done(<%=camelizedSingularName %>InfoErr);
                         }
 
                         // Set assertions
-                        (<%= camelizedSingularName %>InfoRes.body._id).should.equal(<%= camelizedSingularName %>SaveRes.body._id);
-                        (<%= camelizedSingularName %>InfoRes.body.name).should.equal(<%= camelizedSingularName %>.name);
-                        should.equal(<%= camelizedSingularName %>InfoRes.body.user, undefined);
+                        (<%=camelizedSingularName %>InfoRes.body._id).should.equal(<%=camelizedSingularName %>SaveRes.body._id);
+                        (<%=camelizedSingularName %>InfoRes.body.title).should.equal(<%=camelizedSingularName %>.title);
+                        should.equal(<%=camelizedSingularName %>InfoRes.body.user, undefined);
 
                         // Call the assertion callback
                         done();
@@ -403,9 +303,118 @@ describe('<%= humanizedSingularName %> CRUD tests', function () {
     });
   });
 
-  afterEach(function (done) {
-    User.remove().exec(function () {
-      <%= classifiedSingularName %>.remove().exec(done);
+  it('should be able to get a single <%=camelizedSingularName %> if not signed in and verify the custom "isCurrentUserOwner" field is set to "false"', function (done) {
+    // Create new <%=camelizedSingularName %> model instance
+    var <%=camelizedSingularName %>Obj = new <%= humanizedSingularName %>(<%=camelizedSingularName %>);
+
+    // Save the <%=camelizedSingularName %>
+    <%=camelizedSingularName %>Obj.save(function (err) {
+      if (err) {
+        return done(err);
+      }
+      agent.get('/api/<%=camelizedPluralName %>/' + <%=camelizedSingularName %>Obj._id)
+        .end(function (req, res) {
+          // Set assertion
+          res.body.should.be.instanceof(Object).and.have.property('title', <%=camelizedSingularName %>.title);
+          // Assert the custom field "isCurrentUserOwner" is set to false for the un-authenticated User
+          res.body.should.be.instanceof(Object).and.have.property('isCurrentUserOwner', false);
+          // Call the assertion callback
+          done();
+        });
     });
+  });
+
+  it('should be able to get single <%=camelizedSingularName %>, that a different user created, if logged in & verify the "isCurrentUserOwner" field is set to "false"', function (done) {
+    // Create temporary user creds
+    var _creds = {
+      usernameOrEmail: '<%=camelizedSingularName %>owner',
+      password: 'M3@n.jsI$Aw3$0m3'
+    };
+
+    // Create user that will create the <%= humanizedSingularName %>
+    var _<%=camelizedSingularName %>Owner = new User({
+      firstName: 'Full',
+      lastName: 'Name',
+      displayName: 'Full Name',
+      email: 'temp@test.com',
+      username: _creds.usernameOrEmail,
+      password: _creds.password,
+      provider: 'local',
+      roles: ['admin', 'user']
+    });
+
+    _<%=camelizedSingularName %>Owner.save(function (err, _user) {
+      // Handle save error
+      if (err) {
+        return done(err);
+      }
+
+      // Sign in with the user that will create the <%= humanizedSingularName %>
+      agent.post('/api/auth/signin')
+        .send(_creds)
+        .expect(200)
+        .end(function (signinErr, signinRes) {
+          // Handle signin error
+          if (signinErr) {
+            return done(signinErr);
+          }
+
+          // Get the userId
+          var userId = _user._id;
+
+          // Save a new <%=camelizedSingularName %>
+          agent.post('/api/<%=camelizedPluralName %>')
+            .send(<%=camelizedSingularName %>)
+            .expect(200)
+            .end(function (<%=camelizedSingularName %>SaveErr, <%=camelizedSingularName %>SaveRes) {
+              // Handle <%=camelizedSingularName %> save error
+              if (<%=camelizedSingularName %>SaveErr) {
+                return done(<%=camelizedSingularName %>SaveErr);
+              }
+
+              // Set assertions on new <%=camelizedSingularName %>
+              (<%=camelizedSingularName %>SaveRes.body.title).should.equal(<%=camelizedSingularName %>.title);
+              should.exist(<%=camelizedSingularName %>SaveRes.body.user);
+              should.equal(<%=camelizedSingularName %>SaveRes.body.user._id, userId);
+
+              // now signin with the test suite user
+              agent.post('/api/auth/signin')
+                .send(credentials)
+                .expect(200)
+                .end(function (err, res) {
+                  // Handle signin error
+                  if (err) {
+                    return done(err);
+                  }
+
+                  // Get the <%=camelizedSingularName %>
+                  agent.get('/api/<%=camelizedPluralName %>/' + <%=camelizedSingularName %>SaveRes.body._id)
+                    .expect(200)
+                    .end(function (<%=camelizedSingularName %>InfoErr, <%=camelizedSingularName %>InfoRes) {
+                      // Handle <%=camelizedSingularName %> error
+                      if (<%=camelizedSingularName %>InfoErr) {
+                        return done(<%=camelizedSingularName %>InfoErr);
+                      }
+
+                      // Set assertions
+                      (<%=camelizedSingularName %>InfoRes.body._id).should.equal(<%=camelizedSingularName %>SaveRes.body._id);
+                      (<%=camelizedSingularName %>InfoRes.body.title).should.equal(<%=camelizedSingularName %>.title);
+                      // Assert that the custom field "isCurrentUserOwner" is set to false since the current User didn't create it
+                      (<%=camelizedSingularName %>InfoRes.body.isCurrentUserOwner).should.equal(false);
+
+                      // Call the assertion callback
+                      done();
+                    });
+                });
+            });
+        });
+    });
+  });
+
+  afterEach(function (done) {
+    <%= humanizedSingularName %>.remove().exec()
+      .then(User.remove().exec())
+      .then(done())
+      .catch(done);
   });
 });

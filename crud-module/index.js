@@ -134,24 +134,43 @@ var ModuleGenerator = yeoman.generators.Base.extend({
 
     // Render angular module files
     this.template('client/config/_.client.routes.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '.client.routes.js');
+    this.template('client/config/_-admin.client.config.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '-admin.client.config.js');
+    this.template('client/config/_-admin.client.routes.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '-admin.client.routes.js');
+    this.template('client/config/_.client.menus.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '.client.menus.js');
+    
+    // Render admin controller
+    this.template('client/controllers/admin/_.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/admin/' + this.slugifiedSingularName + '.client.controller.js');
+    this.template('client/controllers/admin/_.list.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/admin/list-' + this.slugifiedPluralName + '.client.controller.js');
+    
+    // Render client controller
     this.template('client/controllers/_.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/' + this.slugifiedPluralName + '.client.controller.js');
     this.template('client/controllers/_.list.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/list-' + this.slugifiedPluralName + '.client.controller.js');
+    
     this.template('client/services/_.client.service.js', 'modules/' + this.slugifiedPluralName + '/client/services/' + this.slugifiedPluralName + '.client.service.js');
+
+    // Render angular admin tests
+    this.template('tests/client/admin._.client.controller.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/client/admin.' + this.slugifiedPluralName + '.client.controller.tests.js');
+    this.template('tests/client/admin._.client.routes.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/client/admin.' + this.slugifiedPluralName + '.client.routes.tests.js');
+    this.template('tests/client/admin.list._.client.controller.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/client/admin.list.' + this.slugifiedPluralName + '.client.controller.tests.js');
 
     // Render angular tests
     this.template('tests/client/_.client.controller.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/client/' + this.slugifiedPluralName + '.client.controller.tests.js');
     this.template('tests/client/_.client.routes.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/client/' + this.slugifiedPluralName + '.client.routes.tests.js');
     this.template('tests/client/_.list.client.controller.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/client/list-' + this.slugifiedPluralName + '.client.controller.tests.js');
 
-    // Render angular module views
-    this.template('client/views/_.form.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/form-' + this.slugifiedSingularName + '.client.view.html');
+    // Render angular module admin views
+    this.template('client/views/admin/_.form.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/admin/form-' + this.slugifiedSingularName + '.client.view.html');
+    this.template('client/views/admin/_.list.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/admin/list-' + this.slugifiedPluralName + '.client.view.html');
+
+    // Render angular module admin views
+    //this.template('client/views/_.form.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/form-' + this.slugifiedSingularName + '.client.view.html');
     this.template('client/views/_.view.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/view-' + this.slugifiedSingularName + '.client.view.html');
     this.template('client/views/_.list.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/list-' + this.slugifiedPluralName + '.client.view.html');
 
     // Render menu configuration
-    if (this.addMenuItems) {
-      this.template('client/config/_.client.config.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '.client.config.js');
-    }
+    // if (this.addMenuItems) {
+    //   this.template('client/config/_.client.config.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '.client.config.js');
+    // }
 
     // Render angular module definition
     this.template('client/_.client.module.js', 'modules/' + this.slugifiedPluralName + '/client/' + this.slugifiedPluralName + '.client.module.js');
@@ -171,6 +190,7 @@ var ModuleGenerator = yeoman.generators.Base.extend({
     this.template('server/policies/_.server.policy.js', 'modules/' + this.slugifiedPluralName + '/server/policies/' + this.slugifiedPluralName + '.server.policy.js');
 
     // Add express module tests
+    this.template('tests/server/admin._.server.routes.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/server/admin.' + this.slugifiedSingularName + '.server.routes.tests.js');
     this.template('tests/server/_.server.model.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/server/' + this.slugifiedSingularName + '.server.model.tests.js');
     this.template('tests/server/_.server.routes.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/server/' + this.slugifiedSingularName + '.server.routes.tests.js');
   }
