@@ -4,7 +4,7 @@
   describe('<%= humanizedPluralName %> Route Tests', function () {
     // Initialize global variables
     var $scope,
-      <%= humanizedPluralName %>Service;
+      <%= classifiedPluralName %>Service;
 
     // We can start by loading the main application module
     beforeEach(module(ApplicationConfiguration.applicationModuleName));
@@ -12,10 +12,10 @@
     // The injector ignores leading and trailing underscores here (i.e. _$httpBackend_).
     // This allows us to inject a service but then attach it to a variable
     // with the same name as the service.
-    beforeEach(inject(function ($rootScope, _<%= humanizedPluralName %>Service_) {
+    beforeEach(inject(function ($rootScope, _<%= classifiedPluralName %>Service_) {
       // Set a new global scope
       $scope = $rootScope.$new();
-      <%= humanizedPluralName %>Service = _<%= humanizedPluralName %>Service_;
+      <%= classifiedPluralName %>Service = _<%= classifiedPluralName %>Service_;
     }));
 
     describe('Route Config', function () {
@@ -59,7 +59,7 @@
 
       describe('View Route', function () {
         var viewstate,
-          <%= humanizedPluralName %>Controller,
+          <%= classifiedPluralName %>Controller,
           mock<%= classifiedSingularName %>;
 
         beforeEach(inject(function ($controller, $state, $templateCache) {
@@ -67,31 +67,31 @@
           $templateCache.put('/modules/<%= slugifiedPluralName %>/client/views/view-<%= slugifiedSingularName %>.client.view.html', '');
 
           // create mock <%= slugifiedSingularName %>
-          mock<%= classifiedSingularName %> = new <%= humanizedPluralName %>Service({
+          mock<%= classifiedSingularName %> = new <%= classifiedPluralName %>Service({
             _id: '525a8422f6d0f87f0e407a33',
-            title: 'An <%= classifiedSingularName %> about MEAN',
+            title: 'An <%= humanizedSingularName %> about MEAN',
             content: 'MEAN rocks!'
           });
 
           // Initialize Controller
-          <%= humanizedPluralName %>Controller = $controller('<%= humanizedPluralName %>Controller as vm', {
+          <%= classifiedPluralName %>Controller = $controller('<%= classifiedPluralName %>Controller as vm', {
             $scope: $scope,
-            <%= slugifiedSingularName %>Resolve: mock<%= classifiedSingularName %>
+            <%= camelizedSingularName %>Resolve: mock<%= classifiedSingularName %>
           });
         }));
 
         it('Should have the correct URL', function () {
-          expect(viewstate.url).toEqual('/:<%= slugifiedSingularName %>Id');
+          expect(viewstate.url).toEqual('/:<%= camelizedSingularName %>Id');
         });
 
         it('Should have a resolve function', function () {
           expect(typeof viewstate.resolve).toEqual('object');
-          expect(typeof viewstate.resolve.<%= slugifiedSingularName %>Resolve).toEqual('function');
+          expect(typeof viewstate.resolve.<%= camelizedSingularName %>Resolve).toEqual('function');
         });
 
         it('should respond to URL', inject(function ($state) {
           expect($state.href(viewstate, {
-            <%= slugifiedSingularName %>Id: 1
+            <%= camelizedSingularName %>Id: 1
           })).toEqual('/<%= slugifiedPluralName %>/1');
         }));
 

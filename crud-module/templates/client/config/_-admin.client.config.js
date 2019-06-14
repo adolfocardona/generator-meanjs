@@ -8,10 +8,22 @@
 
   menuConfig.$inject = ['menuService'];
 
-  function menuConfig(Menus) {
-    Menus.addSubMenuItem('topbar', 'admin', {
-      title: 'Manage <%= humanizedPluralName %>',
-      state: 'admin.<%= slugifiedPluralName %>.list'
+  function menuConfig (Menus) {
+    // Set top bar menu items
+    // Menus.addMenuItem('topbar', {
+    //   title: '<%= humanizedPluralName %>',
+    //   state: '<%= slugifiedPluralName %>',
+    //   module: '<%= slugifiedPluralName %>',
+    //   type: 'dropdown',
+    //   roles: ['/api/<%= slugifiedPluralName %>']
+    // });
+
+    // Set top bar menu items
+    Menus.addSubMenuItem('topbar', 'users', {
+      title: 'MANAGE_<%= classifiedAllPluralName %>',
+      state: 'admin.<%= slugifiedPluralName %>.list',
+      module: '<%= slugifiedPluralName %>',
+      roles: ['/api/<%= slugifiedPluralName %>']
     });
   }
 }());

@@ -18,7 +18,10 @@
         url: '',
         templateUrl: '/modules/<%= slugifiedPluralName %>/client/views/list-<%= slugifiedPluralName %>.client.view.html',
         controller: '<%= classifiedPluralName %>ListController',
-        controllerAs: 'vm'
+        controllerAs: 'vm',
+        data: {
+          pageTitle: '<%= humanizedPluralName %> List'
+        }
       })
       .state('<%= slugifiedPluralName %>.view', {
         url: '/:<%= camelizedSingularName %>Id',
@@ -29,7 +32,7 @@
           <%= slugifiedSingularName %>Resolve: get<%= classifiedSingularName %>
         },
         data: {
-          pageTitle: '{{ <%= slugifiedSingularName %>Resolve.title }}'
+          pageTitle: '<%= humanizedSingularName %> {{ <%= slugifiedSingularName %>Resolve.title }}'
         }
       });
   }

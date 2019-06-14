@@ -9,6 +9,6 @@ var path = require('path'),
 /**
  * <%= humanizedPluralName %> module init function.
  */
-module.exports = function (app) {
+module.exports = function (app, db) {
 
 };

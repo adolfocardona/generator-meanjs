@@ -7,8 +7,8 @@
 
   <%= classifiedPluralName %>Service.$inject = ['$resource', '$log'];
 
-  function <%= classifiedPluralName %>Service($resource, $log) {
-    var <%= humanizedSingularName %> = $resource('/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id', {
+  function <%= classifiedPluralName %>Service ($resource, $log) {
+    var <%= classifiedSingularName %> = $resource('/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id', {
       <%= camelizedSingularName %>Id: '@_id'
     }, {
       update: {
@@ -16,16 +16,28 @@
       }
     });
 
-    angular.extend(<%= humanizedSingularName %>.prototype, {
+    angular.extend(<%= classifiedSingularName %>.prototype, {
       createOrUpdate: function () {
         var <%= camelizedSingularName %> = this;
         return createOrUpdate(<%= camelizedSingularName %>);
-      }
+      },
+      removeItem: function (id, callback) {
+        var modules = $resource('/api/<%= slugifiedPluralName %>/' + id);
+        modules.remove(id, function (rst) {
+          callback(rst);
+        });
+      },
+      findAll: function (params, callback) {
+        var modules = $resource('/api/<%= slugifiedPluralName %>/findAll', params);
+        modules.query({}, function (rst) {
+          callback(rst);
+        });
+      }<%- dataClientService %>
     });
 
-    return <%= humanizedSingularName %>;
+    return <%= classifiedSingularName %>;
 
-    function createOrUpdate(<%= camelizedSingularName %>) {
+    function createOrUpdate (<%= camelizedSingularName %>) {
       if (<%= camelizedSingularName %>._id) {
         return <%= camelizedSingularName %>.$update(onSuccess, onError);
       } else {
@@ -33,19 +45,19 @@
       }
 
       // Handle successful response
-      function onSuccess(<%= camelizedSingularName %>) {
+      function onSuccess (<%= camelizedSingularName %>) {
         // Any required internal processing from inside the service, goes here.
       }
 
       // Handle error response
-      function onError(errorResponse) {
+      function onError (errorResponse) {
         var error = errorResponse.data;
         // Handle error internally
         handleError(error);
       }
     }
 
-    function handleError(error) {
+    function handleError (error) {
       // Log error
       $log.error(error);
     }

@@ -7,12 +7,17 @@ var <%= camelizedPluralName %>Policy = require('../policies/<%= slugifiedPluralN
   <%= camelizedPluralName %> = require('../controllers/<%= slugifiedPluralName %>.server.controller');
 
 module.exports = function (app) {
+
+  // <%= humanizedPluralName %> FindAll Route
+  app.route('/api/<%= slugifiedPluralName %>/findAll').all(<%= camelizedPluralName %>Policy.isAllowed)
+    .get(<%= camelizedPluralName %>.findAll);
+
   // <%= humanizedPluralName %> collection routes
   app.route('/api/<%= slugifiedPluralName %>').all(<%= camelizedPluralName %>Policy.isAllowed)
     .get(<%= camelizedPluralName %>.list)
     .post(<%= camelizedPluralName %>.create);
 
-  // Single <%= camelizedSingularName %> routes
+  // Single <%= slugifiedSingularName %> routes
   app.route('/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id').all(<%= camelizedPluralName %>Policy.isAllowed)
     .get(<%= camelizedPluralName %>.read)
     .put(<%= camelizedPluralName %>.update)

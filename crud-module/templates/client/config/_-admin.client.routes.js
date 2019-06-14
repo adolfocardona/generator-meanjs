@@ -7,7 +7,7 @@
 
   routeConfig.$inject = ['$stateProvider'];
 
-  function routeConfig($stateProvider) {
+  function routeConfig ($stateProvider) {
     $stateProvider
       .state('admin.<%= slugifiedPluralName %>', {
         abstract: true,
@@ -21,6 +21,9 @@
         controllerAs: 'vm',
         data: {
           roles: ['admin']
+        },
+        resolve: {
+          <%= slugifiedSingularName %>Resolve: get<%= classifiedSingularName %>
         }
       })
       .state('admin.<%= slugifiedPluralName %>.create', {
@@ -41,8 +44,7 @@
         controller: '<%= humanizedPluralName %>AdminController',
         controllerAs: 'vm',
         data: {
-          roles: ['admin'],
-          pageTitle: '{{ <%= slugifiedSingularName %>Resolve.title }}'
+          roles: ['admin']
         },
         resolve: {
           <%= slugifiedSingularName %>Resolve: get<%= classifiedSingularName %>
@@ -52,7 +54,7 @@
 
   get<%= classifiedSingularName %>.$inject = ['$stateParams', '<%= humanizedPluralName %>Service'];
 
-  function get<%= classifiedSingularName %>($stateParams, <%= humanizedPluralName %>Service) {
+  function get<%= classifiedSingularName %> ($stateParams, <%= humanizedPluralName %>Service) {
     return <%= humanizedPluralName %>Service.get({
       <%= slugifiedSingularName %>Id: $stateParams.<%= slugifiedSingularName %>Id
     }).$promise;
@@ -60,7 +62,7 @@
 
   new<%= classifiedSingularName %>.$inject = ['<%= humanizedPluralName %>Service'];
 
-  function new<%= classifiedSingularName %>(<%= humanizedPluralName %>Service) {
+  function new<%= classifiedSingularName %> (<%= humanizedPluralName %>Service) {
     return new <%= humanizedPluralName %>Service();
   }
 }());

@@ -3,12 +3,12 @@
 
   describe('<%= humanizedPluralName %> Controller Tests', function () {
     // Initialize global variables
-    var <%= classifiedPluralName %>Controller,
+    var <%= humanizedPluralName %>Controller,
       $scope,
       $httpBackend,
       $state,
       Authentication,
-      <%= classifiedPluralName %>Service,
+      <%= humanizedPluralName %>Service,
       mock<%= classifiedSingularName %>;
 
     // The $resource service augments the response object with methods for updating and deleting the resource.
@@ -36,7 +36,7 @@
     // The injector ignores leading and trailing underscores here (i.e. _$httpBackend_).
     // This allows us to inject a service but then attach it to a variable
     // with the same name as the service.
-    beforeEach(inject(function ($controller, $rootScope, _$state_, _$httpBackend_, _Authentication_, _<%= classifiedPluralName %>Service_) {
+    beforeEach(inject(function ($controller, $rootScope, _$state_, _$httpBackend_, _Authentication_, _<%= humanizedPluralName %>Service_) {
       // Set a new global scope
       $scope = $rootScope.$new();
 
@@ -44,12 +44,12 @@
       $httpBackend = _$httpBackend_;
       $state = _$state_;
       Authentication = _Authentication_;
-      <%= classifiedPluralName %>Service = _<%= classifiedPluralName %>Service_;
+      <%= humanizedPluralName %>Service = _<%= humanizedPluralName %>Service_;
 
       // create mock <%= camelizedSingularName %>
-      mock<%= classifiedSingularName %> = new <%= classifiedPluralName %>Service({
+      mock<%= classifiedSingularName %> = new <%= humanizedPluralName %>Service({
         _id: '525a8422f6d0f87f0e407a33',
-        title: 'An <%= humanizedSingularName %> about MEAN',
+        title: 'An <%= classifiedSingularName %> about MEAN',
         content: 'MEAN rocks!'
       });
 
@@ -59,7 +59,7 @@
       };
 
       // Initialize the <%= humanizedPluralName %> controller.
-      <%= classifiedPluralName %>Controller = $controller('<%= humanizedPluralName %>Controller as vm', {
+      <%= humanizedPluralName %>Controller = $controller('<%= humanizedPluralName %>Controller as vm', {
         $scope: $scope,
         <%= camelizedSingularName %>Resolve: {}
       });

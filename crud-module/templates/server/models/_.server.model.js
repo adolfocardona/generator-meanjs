@@ -4,25 +4,15 @@
  * Module dependencies
  */
 var mongoose = require('mongoose'),
-  Schema = mongoose.Schema,
-  path = require('path'),
-  config = require(path.resolve('./config/config')),
-  chalk = require('chalk');
+  Schema = mongoose.Schema;
 
 /**
- * <%= humanizedSingularName %> Schema
+ * <%= classifiedSingularName %> Schema
  */
-var <%= classifiedSingularName %>Schema = new Schema({
-  title: {
-    type: String,
-    default: '',
-    trim: true,
-    required: 'Title cannot be blank'
-  },
-  content: {
-    type: String,
-    default: '',
-    trim: true
+var <%= classifiedSingularName %>Schema = new Schema({<%- dataModelServer %>
+  status: {
+    type: Number,
+    default: 1
   },
   created: {
     type: Date,
@@ -31,108 +21,100 @@ var <%= classifiedSingularName %>Schema = new Schema({
   user: {
     type: Schema.ObjectId,
     ref: 'User'
+  },
+  modified: {
+    type: Date,
+    default: Date.now
+  },
+  modifiedby: {
+    type: Schema.ObjectId,
+    ref: 'User'
   }
 });
 
-<%= classifiedSingularName %>Schema.statics.seed = seed;
+<%= classifiedSingularName %>Schema.methods.castDataTypeByModel = function (params) {
 
-mongoose.model('<%= classifiedSingularName %>', <%= classifiedSingularName %>Schema);
+  if (!params || typeof params == 'undefined') {
+    return {};
+  }
 
-/**
-* Seeds the User collection with document (<%= humanizedSingularName %>)
-* and provided options.
-*/
-function seed(doc, options) {
-  var <%= humanizedSingularName %> = mongoose.model('<%= humanizedSingularName %>');
+  if (typeof params == 'string') {
+    params = JSON.parse(params);
+  }
 
-  return new Promise(function (resolve, reject) {
+  if (typeof params != 'object') {
+    return {};
+  }
 
-    skipDocument()
-      .then(findAdminUser)
-      .then(add)
-      .then(function (response) {
-        return resolve(response);
-      })
-      .catch(function (err) {
-        return reject(err);
-      });
+  if ( Object.keys(params).length == 0) {
+    return {};
+  }
 
-    function findAdminUser(skip) {
-      var User = mongoose.model('User');
+  var moment = require('moment');
 
-      return new Promise(function (resolve, reject) {
-        if (skip) {
-          return resolve(true);
-        }
+  for (var field in <%= classifiedSingularName %>Schema.paths) {
 
-        User
-          .findOne({
-            roles: { $in: ['admin'] }
-          })
-          .exec(function (err, admin) {
-            if (err) {
-              return reject(err);
-            }
-
-            doc.user = admin;
-
-            return resolve();
-          });
-      });
+    if (params[field] === '' || params[field] === null) {
+      delete params[field];
+      continue;
     }
 
-    function skipDocument() {
-      return new Promise(function (resolve, reject) {
-        <%= humanizedSingularName %>
-          .findOne({
-            title: doc.title
-          })
-          .exec(function (err, existing) {
-            if (err) {
-              return reject(err);
-            }
+    if (field == 'modified' && params['modified']) {
 
-            if (!existing) {
-              return resolve(false);
-            }
+      var date1 = moment(params[field]['begin'],'YYYY-MM-DD H:mm:ss');
+      var date2 = moment(params[field]['end'],'YYYY-MM-DD H:mm:ss');
 
-            if (existing && !options.overwrite) {
-              return resolve(true);
-            }
-
-            // Remove <%= humanizedSingularName %> (overwrite)
-
-            existing.remove(function (err) {
-              if (err) {
-                return reject(err);
-              }
-
-              return resolve(false);
-            });
-          });
-      });
+      params[field]={$gte:date1.toDate(),$lte:date2.toDate()}
     }
 
-    function add(skip) {
-      return new Promise(function (resolve, reject) {
-        if (skip) {
-          return resolve({
-            message: chalk.yellow('Database Seeding: <%= humanizedSingularName %>\t' + doc.title + ' skipped')
-          });
-        }
+    if (field == 'created' && params['created']) {
 
-        var <%= camelizedSingularName %> = new <%= humanizedSingularName %>(doc);
+      var date1 = moment(params[field]['begin'],'YYYY-MM-DD H:mm:ss');
+      var date2 = moment(params[field]['end'],'YYYY-MM-DD H:mm:ss');
 
-        <%= camelizedSingularName %>.save(function (err) {
-          if (err) {
-            return reject(err);
-          }
-
-          return resolve({
-            message: 'Database Seeding: <%= humanizedSingularName %>\t' + <%= camelizedSingularName %>.title + ' added'
-          });
-        });
-      });
+      params[field]={$gte:date1.toDate(),$lte:date2.toDate()}
     }
-  });
-}
+
+    if (field == 'user' && params['user._id']) {
+      params['user'] = mongoose.Types.ObjectId(params['user._id']);
+      delete params['user._id'];
+    }
+
+    if (field == 'modifiedby' && params['modifiedby._id']) {
+      params['modifiedby'] = mongoose.Types.ObjectId(params['modifiedby._id']);
+      delete params['modifiedby._id'];
+    }
+<%- dataModelServer2 %>
+    if (!params[field]) {
+      continue;
+    }
+
+    if (<%= classifiedSingularName %>Schema.paths[field].instance === 'Number') {
+      params[field] = parseFloat(params[field], 10);
+    }
+  }
+  return params;
+};
+
+<%= classifiedSingularName %>Schema.methods.processPopulate = function (params) {
+
+  if (!params || typeof params == 'undefined') {
+    return { path: '', field: '' };
+  }
+
+  if (typeof params == 'string') {
+    params = JSON.parse(params);
+  }
+
+  if (typeof params != 'object') {
+    return { path: '', field: '' };
+  }
+
+  if ( Object.keys(params).length == 0) {
+    return { path: '', field: '' };
+  }
+
+  return params;
+};
+
+module.exports = mongoose.model('<%= classifiedSingularName %>', <%= classifiedSingularName %>Schema);

@@ -1,7 +1,6 @@
 (function () {
   'use strict';
 
-  // <%= humanizedPluralName %> controller
   angular
     .module('<%= slugifiedPluralName %>')
     .controller('<%= classifiedPluralName %>Controller', <%= classifiedPluralName %>Controller);

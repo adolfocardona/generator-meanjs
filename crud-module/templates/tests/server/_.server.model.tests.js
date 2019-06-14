@@ -6,7 +6,7 @@
 var should = require('should'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
-  <%= classifiedSingularName %> = mongoose.model('<%= classifiedSingularName %>');
+  <%= classifiedSingularName %> = mongoose.model('<%= humanizedSingularName %>');
 
 /**
  * Globals
@@ -33,8 +33,8 @@ describe('<%= humanizedSingularName %> Model Unit Tests:', function () {
     user.save()
       .then(function () {
         <%= camelizedSingularName %> = new <%= classifiedSingularName %>({
-          title: '<%= classifiedSingularName %> Title',
-          content: '<%= classifiedSingularName %> Content',
+          title: '<%= humanizedSingularName %> Name',
+          content: '<%= humanizedSingularName %> Status',
           user: user
         });
 
@@ -46,16 +46,16 @@ describe('<%= humanizedSingularName %> Model Unit Tests:', function () {
   describe('Method Save', function () {
     it('should be able to save without problems', function (done) {
       this.timeout(10000);
-      <%=camelizedSingularName %>.save(function (err) {
+      <%= camelizedSingularName %>.save(function (err) {
         should.not.exist(err);
         return done();
       });
     });
 
-    it('should be able to show an error when try to save without title', function (done) {
-      <%= camelizedSingularName %>.title = '';
+    it('should be able to show an error when try to save without name', function (done) {
+      <%= camelizedSingularName %>.name = '';
 
-      <%=camelizedSingularName %>.save(function (err) {
+      <%= camelizedSingularName %>.save(function (err) {
         should.exist(err);
         return done();
       });

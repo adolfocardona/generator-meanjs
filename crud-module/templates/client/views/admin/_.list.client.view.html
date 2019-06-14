@@ -1,26 +1,108 @@
 <section>
   <div class="page-header">
     <h1>
-      <%= humanizedPluralName %>
+      <b translate>
+        load.<%= humanizedSingularName %>.TITLE
+      </b>
       <a class="btn btn-primary pull-right" data-ui-sref="admin.<%= camelizedPluralName %>.create">
         <i class="glyphicon glyphicon-plus"></i>
       </a>
     </h1>
   </div>
-  <div class="list-group">
-    <a data-ng-repeat="<%= camelizedSingularName %> in vm.<%= camelizedPluralName %>" data-ui-sref="admin.<%= camelizedPluralName %>.edit({<%= camelizedSingularName %>Id: <%= camelizedSingularName %>._id})" class="list-group-item">
-      <small class="list-group-item-text">
-        Posted on
-        <span data-ng-bind="<%= camelizedSingularName %>.created | date:'mediumDate'"></span>
-        by
-        <span ng-if="<%= camelizedSingularName %>.user" ng-bind="<%= camelizedSingularName %>.user.displayName"></span>
-        <span ng-if="!<%= camelizedSingularName %>.user">Deleted User</span>
-      </small>
-      <h4 class="list-group-item-heading" data-ng-bind="<%= camelizedSingularName %>.title"></h4>
-      <p class="list-group-item-text" data-ng-bind="<%= camelizedSingularName %>.content"></p>
-    </a>
-  </div>
-  <div class="alert alert-warning text-center" data-ng-if="vm.<%= camelizedPluralName %>.$resolved && !vm.<%= camelizedPluralName %>.length">
-    No <%= camelizedPluralName %> yet, why don't you <a data-ui-sref="admin.<%= camelizedPluralName %>.create">create one</a>?
+  <div class="page-header">
+    <div ui-grid="gridOptions" ui-grid-pagination class="grid"></div>
   </div>
 </section>
+
+<!-- MODAL PARA SELECCIONAR FECHA  -->
+<div>
+  <script type = "text/ng-template" id = "custom-date-filter.html">
+  
+    <div class = "modal-content 
+         col-md-12 
+         col-md-offset-0 
+         col-sm-12 
+         col-sm-offset-0 
+         col-xs-12 
+         col-xs-offset-0">
+
+      <div class = "modal-header" style="background-color:Tomato;"">
+        <p class = "modal-title well custom-date-filter-header">
+          <span class = "custom-date-filter-title-text">
+            {{ custom.title }}
+          </span>
+        </p>
+      </div>
+
+      <div class = "row modal-body custom-date-filter-container-row">
+
+        <form name = "custom.customDateFilterForm"
+              ng-submit = "custom.setFilterDate(custom.filterDate)"
+              no-validation>
+
+          <div class="row custom-filter-date-input-row">
+          
+            <div class = "well 
+                 col-md-8
+                 col-md-offset-2
+                 col-sm-8
+                 col-sm-offset-2
+                 col-xs-10
+                 col-xs-offset-1 
+                 custom-date-filter-input">
+              {{ custom.minDate }}
+              <div uib-datepicker 
+                   ng-model = "custom.filterDate"
+                   min-date = "custom.minDate"
+                   max-date = "custom.maxDate"
+                   ng-change = "custom.filterDateChanged()"
+                   class = "well well-sm">
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class = "row modal-footer custom-date-filter-submit-buttons-row">
+
+            <div class = "custom-date-filter-submit-buttons-div 
+                 col-lg-8 
+                 col-lg-offset-2 
+                 col-md-8 
+                 col-md-offset-2 
+                 col-sm-10 
+                 col-sm-offset-1 
+                 col-xs-10 
+                 col-xs-offset-1">
+
+              <button type = "submit"
+                      class = "btn
+                      btn-success 
+                      btn-lg 
+                      custom-date-filter-submit-button">
+                Apply
+              </button>
+
+              <button type = "button"
+                      class = "btn 
+                      btn-warning 
+                      btn-lg 
+                      custom-date-filter-cancel-button"
+                      ng-click = "custom.cancelDateFilter()">
+                Cancel
+              </button>
+
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+  
+  </script>
+</div>
+
+<!-- FIN MODAL PARA SELECCIONAR FECHA  -->
