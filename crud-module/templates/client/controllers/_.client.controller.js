@@ -8,7 +8,7 @@
 
   <%= classifiedPluralName %>Controller.$inject = ['$scope', '<%= camelizedSingularName %>Resolve', 'Authentication'];
 
-  function <%= classifiedPluralName %>Controller ($scope, <%= camelizedSingularName %>, Authentication) {
+  function <%= classifiedPluralName %>Controller($scope, <%= camelizedSingularName %>, Authentication) {
     var vm = this;
 
     vm.<%= camelizedSingularName %> = <%= camelizedSingularName %>;
