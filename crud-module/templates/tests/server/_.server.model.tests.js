@@ -6,7 +6,7 @@
 var should = require('should'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
-  <%= classifiedSingularName %> = mongoose.model('<%= humanizedSingularName %>');
+  <%= classifiedSingularName %> = mongoose.model('<%= classifiedSingularName %>');
 
 /**
  * Globals
@@ -17,55 +17,51 @@ var user,
 /**
  * Unit tests
  */
-describe('<%= humanizedSingularName %> Model Unit Tests:', function () {
-
-  beforeEach(function (done) {
+describe('<%= humanizedSingularName %> Model Unit Tests:', function() {
+  beforeEach(function(done) {
     user = new User({
       firstName: 'Full',
       lastName: 'Name',
       displayName: 'Full Name',
       email: 'test@test.com',
       username: 'username',
-      password: 'M3@n.jsI$Aw3$0m3',
-      provider: 'local'
+      password: 'password'
     });
 
-    user.save()
-      .then(function () {
-        <%= camelizedSingularName %> = new <%= classifiedSingularName %>({
-          title: '<%= humanizedSingularName %> Name',
-          content: '<%= humanizedSingularName %> Status',
-          user: user
-        });
+    user.save(function() {
+      <%= camelizedSingularName %> = new <%= classifiedSingularName %>({
+        name: '<%= humanizedSingularName %> Name',
+        user: user
+      });
 
-        done();
-      })
-      .catch(done);
+      done();
+    });
   });
 
-  describe('Method Save', function () {
-    it('should be able to save without problems', function (done) {
-      this.timeout(10000);
-      <%= camelizedSingularName %>.save(function (err) {
+  describe('Method Save', function() {
+    it('should be able to save without problems', function(done) {
+      this.timeout(0);
+      return <%=camelizedSingularName %>.save(function(err) {
         should.not.exist(err);
-        return done();
+        done();
       });
     });
 
-    it('should be able to show an error when try to save without name', function (done) {
+    it('should be able to show an error when try to save without name', function(done) {
       <%= camelizedSingularName %>.name = '';
 
-      <%= camelizedSingularName %>.save(function (err) {
+      return <%=camelizedSingularName %>.save(function(err) {
         should.exist(err);
-        return done();
+        done();
       });
     });
   });
 
-  afterEach(function (done) {
-    <%= classifiedSingularName %>.remove().exec()
-      .then(User.remove().exec())
-      .then(done())
-      .catch(done);
+  afterEach(function(done) {
+    <%= classifiedSingularName %>.remove().exec(function() {
+      User.remove().exec(function() {
+        done();
+      });
+    });
   });
 });

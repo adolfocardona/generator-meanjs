@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('<%= slugifiedPluralName %>.routes')
+    .module('<%= slugifiedPluralName %>')
     .config(routeConfig);
 
   routeConfig.$inject = ['$stateProvider'];
@@ -16,23 +16,49 @@
       })
       .state('<%= slugifiedPluralName %>.list', {
         url: '',
-        templateUrl: '/modules/<%= slugifiedPluralName %>/client/views/list-<%= slugifiedPluralName %>.client.view.html',
+        templateUrl: 'modules/<%= slugifiedPluralName %>/client/views/list-<%= slugifiedPluralName %>.client.view.html',
         controller: '<%= classifiedPluralName %>ListController',
         controllerAs: 'vm',
         data: {
           pageTitle: '<%= humanizedPluralName %> List'
         }
       })
-      .state('<%= slugifiedPluralName %>.view', {
-        url: '/:<%= camelizedSingularName %>Id',
-        templateUrl: '/modules/<%= slugifiedPluralName %>/client/views/view-<%= slugifiedSingularName %>.client.view.html',
+      .state('<%= slugifiedPluralName %>.create', {
+        url: '/create',
+        templateUrl: 'modules/<%= slugifiedPluralName %>/client/views/form-<%= slugifiedSingularName %>.client.view.html',
+        controller: '<%= classifiedPluralName %>Controller',
+        controllerAs: 'vm',
+        resolve: {
+          <%= slugifiedSingularName %>Resolve: new<%= classifiedSingularName %>
+        },
+        data: {
+          roles: ['user', 'admin'],
+          pageTitle: '<%= humanizedPluralName %> Create'
+        }
+      })
+      .state('<%= slugifiedPluralName %>.edit', {
+        url: '/:<%= camelizedSingularName %>Id/edit',
+        templateUrl: 'modules/<%= slugifiedPluralName %>/client/views/form-<%= slugifiedSingularName %>.client.view.html',
         controller: '<%= classifiedPluralName %>Controller',
         controllerAs: 'vm',
         resolve: {
           <%= slugifiedSingularName %>Resolve: get<%= classifiedSingularName %>
         },
         data: {
-          pageTitle: '<%= humanizedSingularName %> {{ <%= slugifiedSingularName %>Resolve.title }}'
+          roles: ['user', 'admin'],
+          pageTitle: 'Edit <%= humanizedSingularName %> {{ <%= slugifiedSingularName %>Resolve.name }}'
+        }
+      })
+      .state('<%= slugifiedPluralName %>.view', {
+        url: '/:<%= camelizedSingularName %>Id',
+        templateUrl: 'modules/<%= slugifiedPluralName %>/client/views/view-<%= slugifiedSingularName %>.client.view.html',
+        controller: '<%= classifiedPluralName %>Controller',
+        controllerAs: 'vm',
+        resolve: {
+          <%= slugifiedSingularName %>Resolve: get<%= classifiedSingularName %>
+        },
+        data: {
+          pageTitle: '<%= humanizedSingularName %> {{ <%= slugifiedSingularName %>Resolve.name }}'
         }
       });
   }
@@ -43,5 +69,11 @@
     return <%= classifiedPluralName %>Service.get({
       <%= camelizedSingularName %>Id: $stateParams.<%= camelizedSingularName %>Id
     }).$promise;
+  }
+
+  new<%= classifiedSingularName %>.$inject = ['<%= classifiedPluralName %>Service'];
+
+  function new<%= classifiedSingularName %>(<%= classifiedPluralName %>Service) {
+    return new <%= classifiedPluralName %>Service();
   }
 }());
