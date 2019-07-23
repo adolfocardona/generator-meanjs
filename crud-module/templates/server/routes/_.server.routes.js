@@ -8,11 +8,11 @@ var <%= camelizedPluralName %>Policy = require('../policies/<%= slugifiedPluralN
 
 module.exports = function(app) {
   // <%= humanizedPluralName %> Routes
-  app.route('/api/<%= slugifiedPluralName %>').all(<%= camelizedPluralName %>Policy.isAllowed)
+  app.route('/api/<%= slugifiedPluralName %>').all(<%= camelizedPluralName %>Policy.logHttp, <%= camelizedPluralName %>Policy.isAllowed)
     .get(<%= camelizedPluralName %>.list)
     .post(<%= camelizedPluralName %>.create);
 
-  app.route('/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id').all(<%= camelizedPluralName %>Policy.isAllowed)
+  app.route('/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id').all(<%= camelizedPluralName %>Policy.logHttp, <%= camelizedPluralName %>Policy.isAllowed)
     .get(<%= camelizedPluralName %>.read)
     .put(<%= camelizedPluralName %>.update)
     .delete(<%= camelizedPluralName %>.delete);

@@ -133,9 +133,12 @@ var ModuleGenerator = yeoman.generators.Base.extend({
     }
 
     // Render angular module files
+    this.template('client/config/_-admin.client.routes.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '-admin.client.routes.js');
     this.template('client/config/_.client.routes.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '.client.routes.js');
-    this.template('client/controllers/_.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/' + this.slugifiedPluralName + '.client.controller.js');
-    this.template('client/controllers/_.list.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/list-' + this.slugifiedPluralName + '.client.controller.js');
+    this.template('client/controllers/admin/_.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/admin/' + this.slugifiedPluralName + '.client.controller.js');
+    this.template('client/controllers/admin/_.list.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/admin/list-' + this.slugifiedPluralName + '.client.controller.js');
+    ////this.template('client/controllers/_.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/' + this.slugifiedPluralName + '.client.controller.js');
+    //this.template('client/controllers/_.list.client.controller.js', 'modules/' + this.slugifiedPluralName + '/client/controllers/list-' + this.slugifiedPluralName + '.client.controller.js');
     this.template('client/services/_.client.service.js', 'modules/' + this.slugifiedPluralName + '/client/services/' + this.slugifiedPluralName + '.client.service.js');
 
     // Render angular tests
@@ -144,12 +147,16 @@ var ModuleGenerator = yeoman.generators.Base.extend({
     this.template('tests/client/_.list.client.controller.tests.js', 'modules/' + this.slugifiedPluralName + '/tests/client/list-' + this.slugifiedPluralName + '.client.controller.tests.js');
 
     // Render angular module views
-    this.template('client/views/_.form.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/form-' + this.slugifiedSingularName + '.client.view.html');
-    this.template('client/views/_.view.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/view-' + this.slugifiedSingularName + '.client.view.html');
-    this.template('client/views/_.list.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/list-' + this.slugifiedPluralName + '.client.view.html');
+    this.template('client/views/admin/_.form.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/admin/form-' + this.slugifiedSingularName + '.client.view.html');
+    this.template('client/views/admin/_.view.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/admin/view-' + this.slugifiedSingularName + '.client.view.html');
+    this.template('client/views/admin/_.list.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/admin/list-' + this.slugifiedPluralName + '.client.view.html');
+    //this.template('client/views/_.form.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/form-' + this.slugifiedSingularName + '.client.view.html');
+    //this.template('client/views/_.view.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/view-' + this.slugifiedSingularName + '.client.view.html');
+    //this.template('client/views/_.list.client.view.html', 'modules/' + this.slugifiedPluralName + '/client/views/list-' + this.slugifiedPluralName + '.client.view.html');
 
     // Render menu configuration
     if (this.addMenuItems) {
+      this.template('client/config/_-admin.client.config.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '-admin.client.config.js');
       this.template('client/config/_.client.config.js', 'modules/' + this.slugifiedPluralName + '/client/config/' + this.slugifiedPluralName + '.client.config.js');
     }
 

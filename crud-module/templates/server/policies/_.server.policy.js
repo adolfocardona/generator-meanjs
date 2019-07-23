@@ -1,72 +1,73 @@
 'use strict';
 
-/**
- * Module dependencies
- */
-var acl = require('acl');
-
-// Using the memory backend
-acl = new acl(new acl.memoryBackend());
+var mongoose = require('mongoose'),
+  Log = mongoose.model('Log');
 
 /**
  * Invoke <%= humanizedPluralName %> Permissions
  */
 exports.invokeRolesPolicies = function () {
-  acl.allow([{
-    roles: ['admin'],
-    allows: [{
-      resources: '/api/<%= slugifiedPluralName %>',
-      permissions: '*'
-    }, {
-      resources: '/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id',
-      permissions: '*'
-    }]
-  }, {
-    roles: ['user'],
-    allows: [{
-      resources: '/api/<%= slugifiedPluralName %>',
-      permissions: ['get', 'post']
-    }, {
-      resources: '/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id',
-      permissions: ['get']
-    }]
-  }, {
-    roles: ['guest'],
-    allows: [{
-      resources: '/api/<%= slugifiedPluralName %>',
-      permissions: ['get']
-    }, {
-      resources: '/api/<%= slugifiedPluralName %>/:<%= camelizedSingularName %>Id',
-      permissions: ['get']
-    }]
-  }]);
 };
 
 /**
  * Check If <%= humanizedPluralName %> Policy Allows
  */
 exports.isAllowed = function (req, res, next) {
-  var roles = (req.user) ? req.user.roles : ['guest'];
+  //var roles = (req.user) ? req.user.roles : ['guest'];
 
-  // If an <%= humanizedSingularName %> is being processed and the current user created it then allow any manipulation
-  if (req.<%= camelizedSingularName %> && req.user && req.<%= camelizedSingularName %>.user && req.<%= camelizedSingularName %>.user.id === req.user.id) {
-    return next();
+  if (req.session.permissions == null) {
+    return res.status(403).json({
+      message: '<%= humanizedPluralName %> is not authorized'
+    });
+  }
+  
+  if (!req.session.permissions.<%= camelizedPluralName %>) {
+    return res.status(403).json({
+      message: '<%= humanizedPluralName %> is not authorized'
+    });
   }
 
-  // Check for user roles
-  acl.areAnyRolesAllowed(roles, req.route.path, req.method.toLowerCase(), function (err, isAllowed) {
+  if (!req.session.permissions.<%= camelizedPluralName %>[req.method.toLowerCase()]) {
+    return res.status(403).json({
+      message: '<%= humanizedPluralName %> is not authorized'
+    });
+  }
+
+  if (!req.session.permissions.<%= camelizedPluralName %>[req.method.toLowerCase()][req.route.path]) {
+    return res.status(403).json({
+      message: '<%= humanizedPluralName %> is not authorized'
+    });
+  }
+
+  return next();
+};
+
+/**
+ * Save log http
+ */
+exports.logHttp = function (req, res, next) {
+
+  var log        = new Log();
+  log.host       = req.headers.host;
+  log.user_agent = req.headers['user-agent'];
+  log.method     = req.method;
+  log.url        = req.url;
+  log.ip         = req.clientIp;
+  log.headers    = JSON.stringify(req.headers);
+  log.params     = JSON.stringify(req.params);
+  log.query      = JSON.stringify(req.query);
+  log.body       = JSON.stringify(req.body);
+  if (req.user != undefined) {
+    log.user = mongoose.Types.ObjectId(req.user._id);
+  }
+
+  // Then save the user
+  log.save(function (err) {
     if (err) {
-      // An authorization error occurred
-      return res.status(500).send('Unexpected authorization error');
+      console.log(err);
     } else {
-      if (isAllowed) {
-        // Access granted! Invoke next middleware
-        return next();
-      } else {
-        return res.status(403).json({
-          message: 'User is not authorized'
-        });
-      }
     }
   });
+
+  return next();
 };
